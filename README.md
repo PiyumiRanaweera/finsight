@@ -1,2 +1,2 @@
 # finsight
-personal finance dashdoard with AI-powered spending insights - MERN stack 
+Personal finance dashboard with AI-powered spending insights — Spring Boot, React, PostgreSQL
