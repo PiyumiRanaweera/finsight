@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # FinSight 💰
 
 Personal finance dashboard with AI-powered spending insights.
@@ -34,3 +35,7 @@ _Diagram coming soon_
 ## Getting Started
 
 _Setup instructions coming soon_
+=======
+# finsight
+Personal finance dashboard with AI-powered spending insights — Spring Boot, React, PostgreSQL
+>>>>>>> 9462af93150ba0d91721bfb09ceb4da91f5f5a60
