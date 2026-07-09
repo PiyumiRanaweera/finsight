@@ -6,6 +6,7 @@ export default function Transactions() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+  const [suggesting, setSuggesting] = useState(false);
   const [form, setForm] = useState({
     amount: "",
     type: "EXPENSE",
@@ -42,6 +43,22 @@ export default function Transactions() {
     setShowForm(false);
     setForm({ ...form, amount: "", description: "", categoryId: "" });
     load();
+  };
+
+  const suggestCategory = async () => {
+    if (!form.description) return;
+    setSuggesting(true);
+    try {
+      const { data } = await client.post("/ai/suggest-category", {
+        description: form.description,
+      });
+      if (data.category) {
+        const match = categories.find((c) => c.name === data.category);
+        if (match) setForm((f) => ({ ...f, categoryId: String(match.id) }));
+      }
+    } finally {
+      setSuggesting(false);
+    }
   };
 
   const handleDelete = async (id) => {
@@ -96,16 +113,27 @@ export default function Transactions() {
             onChange={(e) => setForm({ ...form, transactionDate: e.target.value })}
             required
           />
-          <select
-            className="border border-gray-200 rounded-lg px-4 py-2"
-            value={form.categoryId}
-            onChange={(e) => setForm({ ...form, categoryId: e.target.value })}
-          >
-            <option value="">No category</option>
-            {categories.map((c) => (
-              <option key={c.id} value={c.id}>{c.name}</option>
-            ))}
-          </select>
+          <div className="flex gap-2">
+            <select
+              className="border border-gray-200 rounded-lg px-4 py-2 flex-1"
+              value={form.categoryId}
+              onChange={(e) => setForm({ ...form, categoryId: e.target.value })}
+            >
+              <option value="">No category</option>
+              {categories.map((c) => (
+                <option key={c.id} value={c.id}>{c.name}</option>
+              ))}
+            </select>
+            <button
+              type="button"
+              onClick={suggestCategory}
+              disabled={suggesting || !form.description}
+              className="px-3 py-2 bg-purple-100 text-purple-700 rounded-lg text-sm font-medium hover:bg-purple-200 disabled:opacity-40 cursor-pointer whitespace-nowrap"
+              title="Let AI suggest a category from the description"
+            >
+              {suggesting ? "..." : "✨ AI"}
+            </button>
+          </div>
           <button
             type="submit"
             className="col-span-2 bg-blue-600 text-white py-2 rounded-lg font-medium hover:bg-blue-700 cursor-pointer"
