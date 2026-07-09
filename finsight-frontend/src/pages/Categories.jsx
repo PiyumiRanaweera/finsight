@@ -12,7 +12,7 @@ export default function Categories() {
   };
 
   useEffect(() => {
-    load();
+    void load();
   }, []);
 
   const handleAdd = async (e) => {
