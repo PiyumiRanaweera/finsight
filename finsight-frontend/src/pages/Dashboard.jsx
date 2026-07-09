@@ -11,12 +11,26 @@ export default function Dashboard() {
   const [year, setYear] = useState(now.getFullYear());
   const [month, setMonth] = useState(now.getMonth() + 1);
   const [summary, setSummary] = useState(null);
+  const [insights, setInsights] = useState("");
+  const [loadingInsights, setLoadingInsights] = useState(false);
 
   useEffect(() => {
     client
       .get(`/transactions/summary?year=${year}&month=${month}`)
       .then((res) => setSummary(res.data));
+    setInsights(""); // clear old insights when month changes
   }, [year, month]);
+
+  const getInsights = async () => {
+    setLoadingInsights(true);
+    setInsights("");
+    try {
+      const { data } = await client.get(`/ai/insights?year=${year}&month=${month}`);
+      setInsights(data.insights);
+    } finally {
+      setLoadingInsights(false);
+    }
+  };
 
   const fmt = (n) =>
     new Intl.NumberFormat("en-LK", { style: "currency", currency: "LKR" }).format(n);
@@ -97,6 +111,22 @@ export default function Dashboard() {
                   </PieChart>
                 </ResponsiveContainer>
               </div>
+            )}
+          </div>
+
+          <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl shadow-sm p-6 mt-8">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-lg font-semibold">✨ AI Insights</h2>
+              <button
+                onClick={getInsights}
+                disabled={loadingInsights}
+                className="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-purple-700 disabled:opacity-50 cursor-pointer"
+              >
+                {loadingInsights ? "Analyzing..." : "Analyze my month"}
+              </button>
+            </div>
+            {insights && (
+              <p className="text-gray-700 whitespace-pre-line leading-relaxed">{insights}</p>
             )}
           </div>
         </>
