@@ -30,7 +30,7 @@ export default function Transactions() {
   };
 
   useEffect(() => {
-    load();
+    void load();
   }, []);
 
   const handleSubmit = async (e) => {

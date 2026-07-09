@@ -15,10 +15,11 @@ export default function Dashboard() {
   const [loadingInsights, setLoadingInsights] = useState(false);
 
   useEffect(() => {
-    client
-      .get(`/transactions/summary?year=${year}&month=${month}`)
-      .then((res) => setSummary(res.data));
-    setInsights(""); // clear old insights when month changes
+    void (async () => {
+      setInsights("");
+      const res = await client.get(`/transactions/summary?year=${year}&month=${month}`);
+      setSummary(res.data);
+    })();
   }, [year, month]);
 
   const getInsights = async () => {
