@@ -27,16 +27,20 @@ export default function Login() {
   };
 
   return (
-    <div style={styles.page}>
-      <div style={styles.card}>
-        <h1 style={styles.logo}>💰 FinSight</h1>
-        <p style={styles.subtitle}>Sign in to your account</p>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+      <div className="bg-white p-10 rounded-xl shadow-md w-full max-w-md">
+        <h1 className="text-3xl font-bold text-center mb-1">💰 FinSight</h1>
+        <p className="text-gray-500 text-center mb-6">Sign in to your account</p>
 
-        {error && <div style={styles.error}>{error}</div>}
+        {error && (
+          <div className="bg-red-100 text-red-700 px-4 py-3 rounded-lg mb-4 text-sm">
+            {error}
+          </div>
+        )}
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="space-y-4">
           <input
-            style={styles.input}
+            className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             type="email"
             placeholder="Email"
             value={email}
@@ -44,68 +48,26 @@ export default function Login() {
             required
           />
           <input
-            style={styles.input}
+            className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             type="password"
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-          <button style={styles.button} type="submit" disabled={loading}>
+          <button
+            className="w-full py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 cursor-pointer"
+            type="submit"
+            disabled={loading}
+          >
             {loading ? "Signing in..." : "Sign In"}
           </button>
         </form>
 
-        <p style={styles.footer}>
-          No account? <Link to="/register">Register</Link>
+        <p className="text-center mt-6 text-sm text-gray-600">
+          No account? <Link to="/register" className="text-blue-600 hover:underline">Register</Link>
         </p>
       </div>
     </div>
   );
 }
-
-const styles = {
-  page: {
-    minHeight: "100vh",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  card: {
-    background: "white",
-    padding: "2.5rem",
-    borderRadius: "12px",
-    boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
-    width: "100%",
-    maxWidth: "400px",
-  },
-  logo: { textAlign: "center", marginBottom: "0.5rem" },
-  subtitle: { textAlign: "center", color: "#718096", marginBottom: "1.5rem" },
-  error: {
-    background: "#fed7d7",
-    color: "#c53030",
-    padding: "0.75rem",
-    borderRadius: "8px",
-    marginBottom: "1rem",
-    fontSize: "0.9rem",
-  },
-  input: {
-    width: "100%",
-    padding: "0.75rem",
-    marginBottom: "1rem",
-    border: "1px solid #e2e8f0",
-    borderRadius: "8px",
-    fontSize: "1rem",
-  },
-  button: {
-    width: "100%",
-    padding: "0.75rem",
-    background: "#3182ce",
-    color: "white",
-    border: "none",
-    borderRadius: "8px",
-    fontSize: "1rem",
-    cursor: "pointer",
-  },
-  footer: { textAlign: "center", marginTop: "1.5rem", fontSize: "0.9rem" },
-};
