@@ -13,9 +13,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -70,6 +73,38 @@ public class TransactionService {
         Transaction tx = transactionRepository.findByIdAndUserEmail(id, email)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Transaction not found"));
         transactionRepository.delete(tx);
+    }
+
+    public Map<String, Object> getSummary(String email, int year, int month) {
+        YearMonth ym = YearMonth.of(year, month);
+        List<Transaction> txs = transactionRepository
+                .findByUserEmailAndTransactionDateBetweenOrderByTransactionDateDesc(
+                        email, ym.atDay(1), ym.atEndOfMonth());
+
+        BigDecimal income = txs.stream()
+                .filter(t -> t.getType() == Transaction.Type.INCOME)
+                .map(Transaction::getAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal expenses = txs.stream()
+                .filter(t -> t.getType() == Transaction.Type.EXPENSE)
+                .map(Transaction::getAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        Map<String, BigDecimal> byCategory = new HashMap<>();
+        txs.stream()
+                .filter(t -> t.getType() == Transaction.Type.EXPENSE)
+                .forEach(t -> {
+                    String name = t.getCategory() != null ? t.getCategory().getName() : "Uncategorized";
+                    byCategory.merge(name, t.getAmount(), BigDecimal::add);
+                });
+
+        return Map.of(
+                "income", income,
+                "expenses", expenses,
+                "balance", income.subtract(expenses),
+                "byCategory", byCategory
+        );
     }
 
     private Category resolveCategory(String email, Long categoryId) {

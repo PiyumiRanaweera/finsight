@@ -11,6 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/transactions")
@@ -25,6 +26,14 @@ public class TransactionController {
             @RequestParam(required = false) Integer year,
             @RequestParam(required = false) Integer month) {
         return ResponseEntity.ok(transactionService.getAll(auth.getName(), year, month));
+    }
+
+    @GetMapping("/summary")
+    public ResponseEntity<Map<String, Object>> summary(
+            Authentication auth,
+            @RequestParam int year,
+            @RequestParam int month) {
+        return ResponseEntity.ok(transactionService.getSummary(auth.getName(), year, month));
     }
 
     @PostMapping
