@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import client from "../api/client";
+import toast from "react-hot-toast";
+import { errorMessage } from "../api/errors";
 
 export default function Categories() {
   const [categories, setCategories] = useState([]);
   const [name, setName] = useState("");
-  const [error, setError] = useState("");
+  
 
   const load = async () => {
     const { data } = await client.get("/categories");
@@ -17,20 +19,43 @@ export default function Categories() {
 
   const handleAdd = async (e) => {
     e.preventDefault();
-    setError("");
     try {
       await client.post("/categories", { name });
+      toast.success(`Category "${name}" added`);
       setName("");
       load();
     } catch (err) {
-      setError(err.response?.status === 409 ? "Category already exists" : "Something went wrong");
+      toast.error(errorMessage(err));
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!confirm("Delete this category? Its transactions will become uncategorized.")) return;
-    await client.delete(`/categories/${id}`);
-    load();
+  const handleDelete = (id) => {
+    toast((t) => (
+      <div className="flex items-center gap-3">
+        <span>Delete this transaction?</span>
+        <button
+          className="bg-red-600 text-white px-3 py-1 rounded-lg text-sm cursor-pointer"
+          onClick={async () => {
+            toast.dismiss(t.id);
+            try {
+              await client.delete(`/transactions/${id}`);
+              toast.success("Transaction deleted");
+              load();
+            } catch (err) {
+              toast.error(errorMessage(err));
+            }
+          }}
+        >
+          Delete
+        </button>
+        <button
+          className="text-gray-600 px-2 py-1 text-sm cursor-pointer"
+          onClick={() => toast.dismiss(t.id)}
+        >
+          Cancel
+        </button>
+      </div>
+    ));
   };
 
   return (
@@ -49,10 +74,6 @@ export default function Categories() {
           Add
         </button>
       </form>
-
-      {error && (
-        <div className="bg-red-100 text-red-700 px-4 py-3 rounded-lg mb-4 text-sm">{error}</div>
-      )}
 
       <div className="flex flex-wrap gap-3">
         {categories.map((c) => (
