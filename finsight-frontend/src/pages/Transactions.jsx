@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import client from "../api/client";
+import toast from "react-hot-toast";
+import { errorMessage } from "../api/errors";
 
 export default function Transactions() {
   const [transactions, setTransactions] = useState([]);
@@ -35,14 +37,19 @@ export default function Transactions() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await client.post("/transactions", {
-      ...form,
-      amount: parseFloat(form.amount),
-      categoryId: form.categoryId || null,
-    });
-    setShowForm(false);
-    setForm({ ...form, amount: "", description: "", categoryId: "" });
-    load();
+    try {
+      await client.post("/transactions", {
+        ...form,
+        amount: parseFloat(form.amount),
+        categoryId: form.categoryId || null,
+      });
+      toast.success("Transaction added");
+      setShowForm(false);
+      setForm({ ...form, amount: "", description: "", categoryId: "" });
+      load();
+    } catch (err) {
+      toast.error(errorMessage(err));
+    }
   };
 
   const suggestCategory = async () => {
@@ -56,15 +63,40 @@ export default function Transactions() {
         const match = categories.find((c) => c.name === data.category);
         if (match) setForm((f) => ({ ...f, categoryId: String(match.id) }));
       }
+    } catch (err) {
+      toast.error(errorMessage(err, "AI suggestion failed"));
     } finally {
       setSuggesting(false);
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!confirm("Delete this transaction?")) return;
-    await client.delete(`/transactions/${id}`);
-    load();
+  const handleDelete = (id) => {
+    toast((t) => (
+      <div className="flex items-center gap-3">
+        <span>Delete this transaction?</span>
+        <button
+          className="bg-red-600 text-white px-3 py-1 rounded-lg text-sm cursor-pointer"
+          onClick={async () => {
+            toast.dismiss(t.id);
+            try {
+              await client.delete(`/transactions/${id}`);
+              toast.success("Transaction deleted");
+              load();
+            } catch (err) {
+              toast.error(errorMessage(err));
+            }
+          }}
+        >
+          Delete
+        </button>
+        <button
+          className="text-gray-600 px-2 py-1 text-sm cursor-pointer"
+          onClick={() => toast.dismiss(t.id)}
+        >
+          Cancel
+        </button>
+      </div>
+    ));
   };
 
   const fmt = (n) =>
