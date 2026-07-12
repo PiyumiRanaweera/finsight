@@ -73,4 +73,13 @@ public class GlobalExceptionHandler {
                 .body(ErrorResponse.of(500, "INTERNAL_ERROR",
                         "Something went wrong on our side."));
     }
+
+    // Malformed or missing request body
+    @ExceptionHandler(org.springframework.http.converter.HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse> handleUnreadableBody(
+            org.springframework.http.converter.HttpMessageNotReadableException ex) {
+        return ResponseEntity.badRequest()
+                .body(ErrorResponse.of(400, "MALFORMED_REQUEST",
+                        "Request body is missing or not valid JSON"));
+    }
 }
