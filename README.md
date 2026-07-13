@@ -2,38 +2,41 @@
 
 ![CI](https://github.com/PiyumiRanaweera/finsight/actions/workflows/ci.yml/badge.svg)
 
-**AI-powered personal finance tracker** — built with Spring Boot 3, React 18, and Gemini AI.
+**AI-powered personal finance tracker** — Spring Boot 3, React 18, and Gemini AI, with a full fintech design system and dark mode.
 
 Applies enterprise finance domain knowledge from my ERP internship (double-entry accounting,
 audit-grade systems) to a consumer product, built end-to-end with professional engineering
-practices: full test pyramid, CI/CD, and API-first design.
+practices: full test pyramid, CI/CD with branch protection, and API-first design.
 
-![Dashboard](docs/screenshots/dashboard.png)
+![Dashboard](docs/screenshots/dashboard-dark.png)
 
 ## ✨ Features
 
-- **JWT authentication** — BCrypt-hashed credentials, stateless sessions, protected routes
-- **Transaction management** — income/expense tracking with categories, LKR formatting, month filtering
-- **Interactive dashboard** — monthly income/expense/balance cards + category breakdown chart (Recharts)
+- **Interactive dashboard** — gradient balance card with live balance sparkline, category donut chart, per-category breakdown
 - **🤖 AI auto-categorization** — describe a transaction, Gemini picks the category
-- **🤖 AI monthly insights** — natural-language analysis of your spending patterns
+- **🤖 AI monthly insights** — natural-language analysis of spending patterns
+- **Transaction management** — add/edit via modal, friendly date grouping, LKR formatting, month filtering
+- **🎯 Savings goals** — targets with progress bars, deadlines, and add-money actions
+- **👤 Account management** — editable profile, secure password change (current-password verification)
+- **🌙 Dark mode** — full theme system with persistent preference
 - **Polished UX** — toast notifications, inline form validation powered by structured API errors
 
-![AI Suggestion](docs/screenshots/ai-suggest.png)
-
-## 🏗️ Architecture
+| Light | Dark |
+|---|---|
+| ![Light](docs/screenshots/dashboard-light.png) | ![Dark](docs/screenshots/dashboard-dark.png) |
 
 ## 🧪 Engineering Practices
 
-- **Unit tests** — service layer tested in isolation with JUnit 5 + Mockito
+- **Unit tests** — service layer with JUnit 5 + Mockito
 - **Integration tests** — full HTTP flows against real PostgreSQL via **Testcontainers**
-- **CI/CD** — GitHub Actions runs build + tests + lint on every PR; branch protection on `main`
+- **CI/CD** — GitHub Actions on every PR; branch protection requires green checks to merge
 - **Global exception handling** — consistent `ErrorResponse` contract with per-field validation errors
 - **API documentation** — interactive Swagger UI at `/swagger-ui.html`
-- **Health monitoring** — Spring Actuator endpoint at `/actuator/health`
-- **Secrets management** — all credentials via environment variables, never committed
+- **Health monitoring** — Spring Actuator at `/actuator/health`
+- **Secrets management** — all credentials via environment variables
 
-![Swagger](docs/screenshots/swagger.png)
+![Transactions](docs/screenshots/transactions-dark.png)
+![Goals](docs/screenshots/goals-dark.png)
 
 ## 🛠️ Tech Stack
 
@@ -49,21 +52,23 @@ practices: full test pyramid, CI/CD, and API-first design.
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Java 21, Node.js 22+, PostgreSQL 16, Docker (for integration tests)
+Java 21, Node.js 22+, PostgreSQL 16, Docker (for integration tests)
 
 ### Setup
-
 1. Create a PostgreSQL database named `finsight`
-2. Set environment variables:
+2. Set environment variables: `DB_PASSWORD`, `JWT_SECRET`, `GEMINI_API_KEY`
 3. Backend: `cd finsight-backend && ./mvnw spring-boot:run` → http://localhost:8080
 4. Frontend: `cd finsight-frontend && npm install && npm run dev` → http://localhost:5173
 
-> Note: default DB port in config is 5433 — adjust `application.properties` if yours differs.
+> Default DB port in config is 5433 — adjust `application.properties` if yours differs.
 
 ### Run tests
 
 ## 🗺️ Roadmap
 
+- [x] Savings goals with progress tracking
+- [x] Profile & secure password change
+- [x] Dark mode
 - [ ] Refresh token rotation & rate limiting
 - [ ] 📸 Receipt scanning (Gemini vision)
 - [ ] Budgets with overspend projections
@@ -72,3 +77,5 @@ practices: full test pyramid, CI/CD, and API-first design.
 ---
 
 *Built by [Piyumi Ranaweera](https://github.com/PiyumiRanaweera) — BSc (Hons) IT undergraduate, SLIIT*
+
+## 🏗️ Architecture
