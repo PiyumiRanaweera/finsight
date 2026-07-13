@@ -28,6 +28,14 @@ public class TransactionController {
         return ResponseEntity.ok(transactionService.getAll(auth.getName(), year, month));
     }
 
+    @GetMapping("/daily-balances")
+    public ResponseEntity<List<Map<String, Object>>> dailyBalances(
+            Authentication auth,
+            @RequestParam int year,
+            @RequestParam int month) {
+        return ResponseEntity.ok(transactionService.getDailyBalances(auth.getName(), year, month));
+    }
+
     @GetMapping("/summary")
     public ResponseEntity<Map<String, Object>> summary(
             Authentication auth,

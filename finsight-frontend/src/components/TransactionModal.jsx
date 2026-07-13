@@ -1,0 +1,127 @@
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import client from "../api/client";
+import { errorMessage } from "../api/errors";
+
+const EMPTY = {
+  amount: "", type: "EXPENSE", description: "",
+  transactionDate: new Date().toISOString().split("T")[0], categoryId: "",
+};
+
+export default function TransactionModal({ open, onClose, onSaved, categories, editing }) {
+  const [form, setForm] = useState(EMPTY);
+  const [suggesting, setSuggesting] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (editing) {
+      setForm({
+        amount: String(editing.amount),
+        type: editing.type,
+        description: editing.description,
+        transactionDate: editing.transactionDate,
+        categoryId: editing.categoryId ? String(editing.categoryId) : "",
+      });
+    } else {
+      setForm(EMPTY);
+    }
+  }, [editing, open]);
+
+  if (!open) return null;
+
+  const suggestCategory = async () => {
+    if (!form.description) return;
+    setSuggesting(true);
+    try {
+      const { data } = await client.post("/ai/suggest-category", { description: form.description });
+      if (data.category) {
+        const match = categories.find((c) => c.name === data.category);
+        if (match) setForm((f) => ({ ...f, categoryId: String(match.id) }));
+      }
+    } catch (err) {
+      toast.error(errorMessage(err, "AI suggestion failed"));
+    } finally {
+      setSuggesting(false);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    const payload = { ...form, amount: parseFloat(form.amount), categoryId: form.categoryId || null };
+    try {
+      if (editing) {
+        await client.put(`/transactions/${editing.id}`, payload);
+        toast.success("Transaction updated");
+      } else {
+        await client.post("/transactions", payload);
+        toast.success("Transaction added");
+      }
+      onSaved();
+      onClose();
+    } catch (err) {
+      toast.error(errorMessage(err));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const input = "w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white";
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      {/* Backdrop */}
+      <div className="absolute inset-0 bg-gray-900/40 backdrop-blur-sm" onClick={onClose} />
+
+      {/* Panel */}
+      <div className="relative bg-white rounded-3xl shadow-xl w-full max-w-md p-7">
+        <h2 className="text-xl font-bold mb-5">{editing ? "Edit Transaction" : "Add Transaction"}</h2>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="grid grid-cols-2 gap-3">
+            <input className={input} type="number" step="0.01" min="0.01" placeholder="Amount (LKR)"
+              value={form.amount} onChange={(e) => setForm({ ...form, amount: e.target.value })} required />
+            <select className={input} value={form.type}
+              onChange={(e) => setForm({ ...form, type: e.target.value })}>
+              <option value="EXPENSE">Expense</option>
+              <option value="INCOME">Income</option>
+            </select>
+          </div>
+
+          <input className={input} placeholder="Description"
+            value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} required />
+
+          <div className="grid grid-cols-2 gap-3">
+            <input className={input} type="date" value={form.transactionDate}
+              onChange={(e) => setForm({ ...form, transactionDate: e.target.value })} required />
+            <div className="flex gap-2">
+              <select className={`${input} flex-1`} value={form.categoryId}
+                onChange={(e) => setForm({ ...form, categoryId: e.target.value })}>
+                <option value="">No category</option>
+                {categories.map((c) => (
+                  <option key={c.id} value={c.id}>{c.name}</option>
+                ))}
+              </select>
+              <button type="button" onClick={suggestCategory} disabled={suggesting || !form.description}
+                className="px-3 rounded-xl bg-brand-50 text-brand-700 text-sm font-semibold hover:bg-brand-100 disabled:opacity-40 cursor-pointer"
+                title="AI suggest">
+                {suggesting ? "..." : "✨"}
+              </button>
+            </div>
+          </div>
+
+          <div className="flex gap-3 pt-2">
+            <button type="button" onClick={onClose}
+              className="flex-1 py-2.5 rounded-xl border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-gray-50 cursor-pointer">
+              Cancel
+            </button>
+            <button type="submit" disabled={saving}
+              className="flex-1 py-2.5 rounded-xl bg-brand-600 text-white text-sm font-semibold hover:bg-brand-700 disabled:opacity-50 cursor-pointer">
+              {saving ? "Saving..." : editing ? "Save Changes" : "Add Transaction"}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
