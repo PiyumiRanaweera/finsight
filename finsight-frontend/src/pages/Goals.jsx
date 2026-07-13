@@ -71,14 +71,14 @@ export default function Goals() {
       </div>
 
       {showForm && (
-        <form onSubmit={handleCreate} className="bg-white rounded-2xl shadow-sm shadow-gray-200/50 p-6 space-y-4">
+        <form onSubmit={handleCreate} className="bg-white rounded-2xl shadow-sm shadow-gray-200/50 p-6 space-y-4 dark:bg-gray-800 dark:shadow-none">
           <input className={input} placeholder="Goal name (e.g. New Laptop)"
             value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
           <div className="flex gap-2 flex-wrap">
             {EMOJIS.map((em) => (
               <button key={em} type="button" onClick={() => setForm({ ...form, emoji: em })}
                 className={`w-11 h-11 rounded-xl text-xl cursor-pointer transition-colors ${
-                  form.emoji === em ? "bg-violet-100 ring-2 ring-violet-500" : "bg-gray-50 hover:bg-gray-100"
+                  form.emoji === em ? "bg-violet-100 ring-2 ring-violet-500" : "bg-gray-50 hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-700/50"
                 }`}>
                 {em}
               </button>
@@ -97,7 +97,7 @@ export default function Goals() {
       )}
 
       {goals.length === 0 && !showForm ? (
-        <div className="bg-white rounded-2xl shadow-sm shadow-gray-200/50 p-16 text-center">
+        <div className="bg-white rounded-2xl shadow-sm shadow-gray-200/50 p-16 text-center dark:bg-gray-800 dark:shadow-none">
           <p className="text-4xl mb-3">🎯</p>
           <p className="text-gray-500 font-medium">No goals yet</p>
           <p className="text-gray-400 text-sm">Create one and start saving toward it!</p>
@@ -105,7 +105,7 @@ export default function Goals() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {goals.map((g) => (
-            <div key={g.id} className="bg-white rounded-2xl shadow-sm shadow-gray-200/50 p-6">
+            <div key={g.id} className="bg-white rounded-2xl shadow-sm shadow-gray-200/50 p-6 dark:bg-gray-800 dark:shadow-none">
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 rounded-2xl bg-violet-50 flex items-center justify-center text-2xl">
@@ -124,7 +124,7 @@ export default function Goals() {
                 <span className="font-semibold">{fmtLKR(g.savedAmount)}</span>
                 <span className="text-gray-400">of {fmtLKR(g.targetAmount)}</span>
               </div>
-              <div className="h-2.5 bg-gray-100 rounded-full overflow-hidden mb-4">
+              <div className="h-2.5 bg-gray-100 rounded-full overflow-hidden mb-4 dark:bg-gray-700">
                 <div className="h-full rounded-full bg-gradient-to-r from-violet-500 to-purple-600 transition-all"
                   style={{ width: `${g.progressPercent}%` }} />
               </div>
