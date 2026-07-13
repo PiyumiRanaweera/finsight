@@ -1,13 +1,13 @@
 package com.piyumi.finsight_backend.controller;
 
-import com.piyumi.finsight_backend.entity.User;
-import com.piyumi.finsight_backend.repository.UserRepository;
+import com.piyumi.finsight_backend.dto.ChangePasswordRequest;
+import com.piyumi.finsight_backend.dto.UpdateProfileRequest;
+import com.piyumi.finsight_backend.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -16,17 +16,23 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     @GetMapping
-    public ResponseEntity<?> me(Authentication authentication) {
-        String email = authentication.getName(); // set by JwtAuthFilter
-        User user = userRepository.findByEmail(email).orElseThrow();
-        return ResponseEntity.ok(Map.of(
-                "id", user.getId(),
-                "email", user.getEmail(),
-                "fullName", user.getFullName(),
-                "memberSince", user.getCreatedAt().toString()
-        ));
+    public ResponseEntity<Map<String, Object>> me(Authentication auth) {
+        return ResponseEntity.ok(userService.getProfile(auth.getName()));
+    }
+
+    @PutMapping
+    public ResponseEntity<Map<String, Object>> updateProfile(Authentication auth,
+                                                             @Valid @RequestBody UpdateProfileRequest request) {
+        return ResponseEntity.ok(userService.updateProfile(auth.getName(), request));
+    }
+
+    @PostMapping("/change-password")
+    public ResponseEntity<Void> changePassword(Authentication auth,
+                                               @Valid @RequestBody ChangePasswordRequest request) {
+        userService.changePassword(auth.getName(), request);
+        return ResponseEntity.noContent().build();
     }
 }
