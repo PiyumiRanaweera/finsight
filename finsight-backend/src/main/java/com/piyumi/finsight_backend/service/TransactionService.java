@@ -16,9 +16,11 @@ import org.springframework.web.server.ResponseStatusException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 
 @Service
 @RequiredArgsConstructor
@@ -105,6 +107,34 @@ public class TransactionService {
                 "balance", income.subtract(expenses),
                 "byCategory", byCategory
         );
+    }
+
+    public List<Map<String, Object>> getDailyBalances(String email, int year, int month) {
+        YearMonth ym = YearMonth.of(year, month);
+        List<Transaction> txs = transactionRepository
+                .findByUserEmailAndTransactionDateBetweenOrderByTransactionDateDesc(
+                        email, ym.atDay(1), ym.atEndOfMonth());
+
+        // Sum per day: income positive, expense negative
+        Map<Integer, BigDecimal> perDay = new HashMap<>();
+        for (Transaction t : txs) {
+            int day = t.getTransactionDate().getDayOfMonth();
+            BigDecimal signed = t.getType() == Transaction.Type.INCOME
+                    ? t.getAmount() : t.getAmount().negate();
+            perDay.merge(day, signed, BigDecimal::add);
+        }
+
+        // Running balance across the month
+        List<Map<String, Object>> result = new ArrayList<>();
+        BigDecimal running = BigDecimal.ZERO;
+        for (int day = 1; day <= ym.lengthOfMonth(); day++) {
+            running = running.add(perDay.getOrDefault(day, BigDecimal.ZERO));
+            Map<String, Object> point = new HashMap<>();
+            point.put("day", day);
+            point.put("balance", running);
+            result.add(point);
+        }
+        return result;
     }
 
     private Category resolveCategory(String email, Long categoryId) {
