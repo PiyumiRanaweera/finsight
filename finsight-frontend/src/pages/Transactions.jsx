@@ -72,9 +72,9 @@ export default function Transactions() {
       {loading ? (
         <p className="text-gray-400">Loading...</p>
       ) : sortedDates.length === 0 ? (
-        <div className="bg-white rounded-2xl shadow-sm shadow-gray-200/50 p-16 text-center dark:bg-gray-800 dark:shadow-none">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm shadow-gray-200/50 dark:shadow-none p-16 text-center">
           <p className="text-4xl mb-3">💸</p>
-          <p className="text-gray-500 font-medium">No transactions yet</p>
+          <p className="text-gray-500 dark:text-gray-400 font-medium">No transactions yet</p>
           <p className="text-gray-400 text-sm">Add your first one to get started!</p>
         </div>
       ) : (
@@ -83,25 +83,29 @@ export default function Transactions() {
             <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 px-1">
               {friendlyDate(date)}
             </p>
-            <div className="bg-white rounded-2xl shadow-sm shadow-gray-200/50 divide-y divide-gray-50 dark:bg-gray-800 dark:shadow-none dark:divide-gray-700">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm shadow-gray-200/50 dark:shadow-none divide-y divide-gray-50 dark:divide-gray-700">
               {groups[date].map((tx) => (
                 <div key={tx.id}
-                  className="flex items-center gap-4 px-5 py-4 hover:bg-gray-50/50 cursor-pointer transition-colors group"
+                  className="flex items-center gap-4 px-5 py-4 hover:bg-gray-50/50 dark:hover:bg-gray-700/40 cursor-pointer transition-colors group"
                   onClick={() => { setEditing(tx); setModalOpen(true); }}
                 >
-                  <div className="w-11 h-11 rounded-xl bg-brand-50 flex items-center justify-center text-xl shrink-0">
+                  <div className="w-11 h-11 rounded-xl bg-brand-50 dark:bg-violet-950 flex items-center justify-center text-xl shrink-0">
                     {tx.type === "INCOME" ? "💼" : emojiFor(tx.categoryName)}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-semibold text-sm truncate">{tx.description}</p>
                     <p className="text-xs text-gray-400">{tx.categoryName ?? "Uncategorized"}</p>
                   </div>
-                  <span className={`font-bold text-sm ${tx.type === "INCOME" ? "text-emerald-600" : "text-gray-800"}`}>
+                  <span className={`font-bold text-sm ${
+                    tx.type === "INCOME"
+                      ? "text-emerald-600 dark:text-emerald-400"
+                      : "text-gray-800 dark:text-gray-100"
+                  }`}>
                     {tx.type === "INCOME" ? "+" : "-"}{fmtLKR(tx.amount)}
                   </span>
                   <button
                     onClick={(e) => { e.stopPropagation(); handleDelete(tx.id); }}
-                    className="text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer px-1"
+                    className="text-gray-300 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer px-1"
                   >
                     ✕
                   </button>

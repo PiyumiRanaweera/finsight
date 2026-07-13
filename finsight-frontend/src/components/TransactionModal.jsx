@@ -66,7 +66,7 @@ export default function TransactionModal({ open, onClose, onSaved, categories, e
     }
   };
 
-  const input = "w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white";
+  const input = "w-full border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white dark:bg-gray-700 dark:text-gray-100";
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -74,8 +74,10 @@ export default function TransactionModal({ open, onClose, onSaved, categories, e
       <div className="absolute inset-0 bg-gray-900/40 backdrop-blur-sm" onClick={onClose} />
 
       {/* Panel */}
-      <div className="relative bg-white rounded-3xl shadow-xl w-full max-w-md p-7">
-        <h2 className="text-xl font-bold mb-5">{editing ? "Edit Transaction" : "Add Transaction"}</h2>
+      <div className="relative bg-white dark:bg-gray-800 rounded-3xl shadow-xl w-full max-w-md p-7">
+        <h2 className="text-xl font-bold mb-5 dark:text-gray-100">
+          {editing ? "Edit Transaction" : "Add Transaction"}
+        </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-3">
@@ -103,7 +105,7 @@ export default function TransactionModal({ open, onClose, onSaved, categories, e
                 ))}
               </select>
               <button type="button" onClick={suggestCategory} disabled={suggesting || !form.description}
-                className="px-3 rounded-xl bg-brand-50 text-brand-700 text-sm font-semibold hover:bg-brand-100 disabled:opacity-40 cursor-pointer"
+                className="px-3 rounded-xl bg-brand-50 dark:bg-violet-950 text-brand-700 dark:text-violet-300 text-sm font-semibold hover:bg-brand-100 dark:hover:bg-violet-900 disabled:opacity-40 cursor-pointer"
                 title="AI suggest">
                 {suggesting ? "..." : "✨"}
               </button>
@@ -112,7 +114,7 @@ export default function TransactionModal({ open, onClose, onSaved, categories, e
 
           <div className="flex gap-3 pt-2">
             <button type="button" onClick={onClose}
-              className="flex-1 py-2.5 rounded-xl border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-gray-50 cursor-pointer">
+              className="flex-1 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 text-sm font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer">
               Cancel
             </button>
             <button type="submit" disabled={saving}

@@ -58,7 +58,7 @@ export default function Goals() {
     ));
   };
 
-  const input = "w-full border border-gray-200 bg-white rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500";
+  const input = "w-full border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 dark:text-gray-100 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500";
 
   return (
     <div className="space-y-6">
