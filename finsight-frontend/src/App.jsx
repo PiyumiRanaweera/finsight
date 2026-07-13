@@ -7,6 +7,7 @@ import Dashboard from "./pages/Dashboard";
 import Transactions from "./pages/Transactions";
 import Categories from "./pages/Categories";
 import { Toaster } from "react-hot-toast";
+import Goals from "./pages/Goals";
 
 
 function ProtectedRoute({ children }) {
@@ -32,6 +33,7 @@ export default function App() {
             <Route path="/" element={<Dashboard />} />
             <Route path="/transactions" element={<Transactions />} />
             <Route path="/categories" element={<Categories />} />
+            <Route path="/goals" element={<Goals />} />
           </Route>
         </Routes>
       </BrowserRouter>

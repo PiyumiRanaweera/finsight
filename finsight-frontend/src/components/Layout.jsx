@@ -5,6 +5,7 @@ const NAV = [
   { path: "/", label: "Dashboard", icon: "📊" },
   { path: "/transactions", label: "Transactions", icon: "💸" },
   { path: "/categories", label: "Categories", icon: "🏷️" },
+  { path: "/goals", label: "Goals", icon: "🎯" }
 ];
 
 export default function Layout() {

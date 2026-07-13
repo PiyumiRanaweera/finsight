@@ -45,7 +45,7 @@ export default function Register() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="bg-white p-10 rounded-xl shadow-md w-full max-w-md">
+      <div className="bg-white p-10 rounded-3xl shadow-md w-full max-w-md">
         <h1 className="text-3xl font-bold text-center mb-1">💰 FinSight</h1>
         <p className="text-gray-500 text-center mb-6">Create your account</p>
 
@@ -66,7 +66,7 @@ export default function Register() {
             {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
           </div>
           <button
-            className="w-full py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 cursor-pointer"
+            className="w-full py-3 bg-violet-600 text-white rounded-lg font-medium hover:bg-violet-700 disabled:opacity-50 cursor-pointer"
             type="submit" disabled={loading}
           >
             {loading ? "Creating account..." : "Create Account"}
@@ -74,7 +74,7 @@ export default function Register() {
         </form>
 
         <p className="text-center mt-6 text-sm text-gray-600">
-          Already have an account? <Link to="/login" className="text-blue-600 hover:underline">Sign in</Link>
+          Already have an account? <Link to="/login" className="text-violet-600 hover:underline">Sign in</Link>
         </p>
       </div>
     </div>

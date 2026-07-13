@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import client from "../api/client";
 import toast from "react-hot-toast";
 import { errorMessage } from "../api/errors";
+import { emojiFor } from "../utils/format";
 
 export default function Categories() {
   const [categories, setCategories] = useState([]);
@@ -59,29 +60,32 @@ export default function Categories() {
   };
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold mb-6">Categories</h1>
+    <div className="space-y-6">
+      <h1 className="text-2xl font-bold tracking-tight">Categories</h1>
 
-      <form onSubmit={handleAdd} className="flex gap-3 mb-6">
+      <form onSubmit={handleAdd} className="flex gap-3">
         <input
-          className="border border-gray-200 rounded-lg px-4 py-2 flex-1 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="flex-1 border border-gray-200 bg-white rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
           placeholder="New category name"
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
         />
-        <button className="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 cursor-pointer">
+        <button className="bg-violet-600 text-white px-6 py-2.5 rounded-xl text-sm font-semibold hover:bg-violet-700 cursor-pointer">
           Add
         </button>
       </form>
 
       <div className="flex flex-wrap gap-3">
         {categories.map((c) => (
-          <div key={c.id} className="bg-white shadow-sm rounded-full px-4 py-2 flex items-center gap-2">
-            <span>{c.name}</span>
+          <div key={c.id} className="bg-white shadow-sm shadow-gray-200/50 rounded-2xl px-4 py-3 flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-violet-50 flex items-center justify-center text-lg">
+              {emojiFor(c.name)}
+            </div>
+            <span className="font-semibold text-sm">{c.name}</span>
             <button
               onClick={() => handleDelete(c.id)}
-              className="text-gray-400 hover:text-red-600 cursor-pointer"
+              className="text-gray-300 hover:text-red-500 cursor-pointer ml-1"
             >
               ✕
             </button>

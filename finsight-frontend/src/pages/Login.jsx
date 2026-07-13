@@ -28,7 +28,7 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="bg-white p-10 rounded-xl shadow-md w-full max-w-md">
+      <div className="bg-white p-10 rounded-3xl shadow-md w-full max-w-md">
         <h1 className="text-3xl font-bold text-center mb-1">💰 FinSight</h1>
         <p className="text-gray-500 text-center mb-6">Sign in to your account</p>
 
@@ -40,7 +40,7 @@ export default function Login() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
-            className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500"
             type="email"
             placeholder="Email"
             value={email}
@@ -48,7 +48,7 @@ export default function Login() {
             required
           />
           <input
-            className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500"
             type="password"
             placeholder="Password"
             value={password}
@@ -56,7 +56,7 @@ export default function Login() {
             required
           />
           <button
-            className="w-full py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 cursor-pointer"
+            className="w-full py-3 bg-violet-600 text-white rounded-lg font-medium hover:bg-violet-700 disabled:opacity-50 cursor-pointer"
             type="submit"
             disabled={loading}
           >
@@ -65,7 +65,7 @@ export default function Login() {
         </form>
 
         <p className="text-center mt-6 text-sm text-gray-600">
-          No account? <Link to="/register" className="text-blue-600 hover:underline">Register</Link>
+          No account? <Link to="/register" className="text-violet-600 hover:underline">Register</Link>
         </p>
       </div>
     </div>
