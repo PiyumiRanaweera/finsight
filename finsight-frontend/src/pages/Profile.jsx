@@ -5,7 +5,7 @@ import { errorMessage, fieldErrors } from "../api/errors";
 import { useAuth } from "../context/AuthContext";
 
 export default function Profile() {
-  const { user, logout } = useAuth();
+  const { logout } = useAuth();
   const [profile, setProfile] = useState(null);
   const [fullName, setFullName] = useState("");
   const [pw, setPw] = useState({ currentPassword: "", newPassword: "" });
