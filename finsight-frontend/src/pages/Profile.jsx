@@ -66,7 +66,7 @@ export default function Profile() {
 
       {/* Identity card */}
       <div className="bg-gradient-to-br from-violet-600 via-purple-500 to-violet-700 rounded-3xl p-7 text-white flex items-center gap-5 shadow-lg shadow-violet-600/20">
-        <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur flex items-center justify-center text-2xl font-extrabold">
+        <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur flex items-center justify-center text-2xl font-extrabold dark:bg-gray-800">
           {initials}
         </div>
         <div className="flex-1">
@@ -81,7 +81,7 @@ export default function Profile() {
       </div>
 
       {/* Edit name */}
-      <form onSubmit={saveName} className="bg-white rounded-2xl shadow-sm shadow-gray-200/50 p-6 space-y-4">
+      <form onSubmit={saveName} className="bg-white rounded-2xl shadow-sm shadow-gray-200/50 p-6 space-y-4 dark:bg-gray-800 dark:shadow-none">
         <h2 className="font-bold">Personal details</h2>
         <div>
           <label className="text-xs font-semibold text-gray-500 block mb-1.5">Full name</label>
@@ -95,7 +95,7 @@ export default function Profile() {
       </form>
 
       {/* Change password */}
-      <form onSubmit={savePassword} className="bg-white rounded-2xl shadow-sm shadow-gray-200/50 p-6 space-y-4">
+      <form onSubmit={savePassword} className="bg-white rounded-2xl shadow-sm shadow-gray-200/50 p-6 space-y-4 dark:bg-gray-800 dark:shadow-none">
         <h2 className="font-bold">Change password</h2>
         <div>
           <label className="text-xs font-semibold text-gray-500 block mb-1.5">Current password</label>
@@ -115,7 +115,7 @@ export default function Profile() {
       </form>
 
       {/* Danger zone */}
-      <div className="bg-white rounded-2xl shadow-sm shadow-gray-200/50 p-6 flex items-center justify-between">
+      <div className="bg-white rounded-2xl shadow-sm shadow-gray-200/50 p-6 flex items-center justify-between dark:bg-gray-800 dark:shadow-none">
         <div>
           <h2 className="font-bold">Sign out</h2>
           <p className="text-sm text-gray-400">Log out of FinSight on this device</p>

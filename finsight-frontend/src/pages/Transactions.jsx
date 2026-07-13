@@ -72,7 +72,7 @@ export default function Transactions() {
       {loading ? (
         <p className="text-gray-400">Loading...</p>
       ) : sortedDates.length === 0 ? (
-        <div className="bg-white rounded-2xl shadow-sm shadow-gray-200/50 p-16 text-center">
+        <div className="bg-white rounded-2xl shadow-sm shadow-gray-200/50 p-16 text-center dark:bg-gray-800 dark:shadow-none">
           <p className="text-4xl mb-3">💸</p>
           <p className="text-gray-500 font-medium">No transactions yet</p>
           <p className="text-gray-400 text-sm">Add your first one to get started!</p>
@@ -83,7 +83,7 @@ export default function Transactions() {
             <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 px-1">
               {friendlyDate(date)}
             </p>
-            <div className="bg-white rounded-2xl shadow-sm shadow-gray-200/50 divide-y divide-gray-50">
+            <div className="bg-white rounded-2xl shadow-sm shadow-gray-200/50 divide-y divide-gray-50 dark:bg-gray-800 dark:shadow-none dark:divide-gray-700">
               {groups[date].map((tx) => (
                 <div key={tx.id}
                   className="flex items-center gap-4 px-5 py-4 hover:bg-gray-50/50 cursor-pointer transition-colors group"

@@ -70,7 +70,7 @@ export default function Dashboard() {
         </div>
         <div className="flex gap-2">
           <select
-            className="border border-gray-200 bg-white rounded-xl px-3 py-2 text-sm font-medium"
+            className="border border-gray-200 bg-white rounded-xl px-3 py-2 text-sm font-medium dark:bg-gray-800 dark:shadow-none"
             value={month}
             onChange={(e) => setMonth(Number(e.target.value))}
           >
@@ -79,7 +79,7 @@ export default function Dashboard() {
             ))}
           </select>
           <select
-            className="border border-gray-200 bg-white rounded-xl px-3 py-2 text-sm font-medium"
+            className="border border-gray-200 bg-white rounded-xl px-3 py-2 text-sm font-medium dark:bg-gray-800 dark:shadow-none"
             value={year}
             onChange={(e) => setYear(Number(e.target.value))}
           >
@@ -126,7 +126,7 @@ export default function Dashboard() {
           {/* Spending overview */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Donut card */}
-            <div className="bg-white rounded-2xl shadow-sm shadow-gray-200/50 p-6">
+            <div className="bg-white rounded-2xl shadow-sm shadow-gray-200/50 p-6 dark:bg-gray-800 dark:shadow-none">
               <h2 className="text-lg font-bold mb-4">Spending Overview</h2>
               {pieData.length === 0 ? (
                 <p className="text-gray-400 py-16 text-center">No expenses this month yet.</p>
@@ -160,7 +160,7 @@ export default function Dashboard() {
             </div>
 
             {/* Category list card */}
-            <div className="bg-white rounded-2xl shadow-sm shadow-gray-200/50 p-6">
+            <div className="bg-white rounded-2xl shadow-sm shadow-gray-200/50 p-6 dark:bg-gray-800 dark:shadow-none">
               <h2 className="text-lg font-bold mb-4">By Category</h2>
               <div className="space-y-3">
                 {pieData.map((d, i) => {
@@ -178,7 +178,7 @@ export default function Dashboard() {
                           <span className="truncate">{d.name}</span>
                           <span>{fmtLKR(d.value)}</span>
                         </div>
-                        <div className="h-1.5 bg-gray-100 rounded-full mt-1.5 overflow-hidden">
+                        <div className="h-1.5 bg-gray-100 rounded-full mt-1.5 overflow-hidden dark:bg-gray-700">
                           <div
                             className="h-full rounded-full"
                             style={{ width: `${pct}%`, background: COLORS[i % COLORS.length] }}
@@ -197,7 +197,7 @@ export default function Dashboard() {
           </div>
 
           {/* AI insights */}
-          <div className="bg-gradient-to-r from-brand-50 to-violet-50 rounded-2xl shadow-sm shadow-gray-200/50 p-6">
+          <div className="bg-gradient-to-r from-brand-50 to-violet-50 rounded-2xl shadow-sm shadow-gray-200/50 p-6 dark:from-brand-900 dark:to-violet-900">
             <div className="flex items-center justify-between mb-3">
               <h2 className="text-lg font-bold">✨ AI Insights</h2>
               <button

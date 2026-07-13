@@ -65,7 +65,7 @@ export default function Categories() {
 
       <form onSubmit={handleAdd} className="flex gap-3">
         <input
-          className="flex-1 border border-gray-200 bg-white rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+          className="flex-1 border border-gray-200 bg-white rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 dark:bg-gray-800 dark:shadow-none"
           placeholder="New category name"
           value={name}
           onChange={(e) => setName(e.target.value)}
@@ -78,7 +78,7 @@ export default function Categories() {
 
       <div className="flex flex-wrap gap-3">
         {categories.map((c) => (
-          <div key={c.id} className="bg-white shadow-sm shadow-gray-200/50 rounded-2xl px-4 py-3 flex items-center gap-3">
+          <div key={c.id} className="bg-white shadow-sm shadow-gray-200/50 rounded-2xl px-4 py-3 flex items-center gap-3 dark:bg-gray-800 dark:shadow-none">
             <div className="w-9 h-9 rounded-xl bg-violet-50 flex items-center justify-center text-lg">
               {emojiFor(c.name)}
             </div>
