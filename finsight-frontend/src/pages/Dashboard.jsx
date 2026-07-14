@@ -247,7 +247,7 @@ export default function Dashboard() {
               <button
                 onClick={getInsights}
                 disabled={loadingInsights}
-                className="bg-brand-600 text-white px-4 py-2 rounded-3xl text-sm font-semibold hover:bg-brand-700 disabled:opacity-50 cursor-pointer transition-colors"
+                className="bg-violet-600 text-white px-4 py-2 rounded-3xl text-sm font-semibold hover:bg-violet-700 disabled:opacity-50 cursor-pointer transition-colors"
               >
                 {loadingInsights ? "Analyzing..." : "Analyze my month"}
               </button>
