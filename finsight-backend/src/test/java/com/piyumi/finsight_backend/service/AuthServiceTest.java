@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.server.ResponseStatusException;
+import com.piyumi.finsight_backend.service.RefreshTokenService;
 
 import java.util.Optional;
 
@@ -20,6 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -37,6 +39,9 @@ class AuthServiceTest {
     @InjectMocks
     private AuthService authService;
 
+    @Mock
+    private RefreshTokenService refreshTokenService;
+
     // ---------- register ----------
 
     @Test
@@ -45,6 +50,7 @@ class AuthServiceTest {
         when(userRepository.existsByEmail("piyumi@test.com")).thenReturn(false);
         when(passwordEncoder.encode("password123")).thenReturn("hashed-password");
         when(jwtService.generateToken("piyumi@test.com")).thenReturn("fake-jwt");
+        when(refreshTokenService.create(any(User.class))).thenReturn("fake-refresh-token");
 
         AuthResponse response = authService.register(request);
 
@@ -71,6 +77,7 @@ class AuthServiceTest {
         when(userRepository.existsByEmail(anyString())).thenReturn(false);
         when(passwordEncoder.encode("password123")).thenReturn("hashed-password");
         when(jwtService.generateToken(anyString())).thenReturn("fake-jwt");
+        when(refreshTokenService.create(any(User.class))).thenReturn("fake-refresh-token");
 
         authService.register(request);
 
@@ -88,6 +95,7 @@ class AuthServiceTest {
         when(userRepository.findByEmail("piyumi@test.com")).thenReturn(Optional.of(user));
         when(passwordEncoder.matches("password123", "hashed")).thenReturn(true);
         when(jwtService.generateToken("piyumi@test.com")).thenReturn("fake-jwt");
+        when(refreshTokenService.create(any(User.class))).thenReturn("fake-refresh-token");
 
         AuthResponse response = authService.login(request);
 
@@ -113,4 +121,6 @@ class AuthServiceTest {
                 .isInstanceOf(ResponseStatusException.class)
                 .hasMessageContaining("Invalid email or password");
     }
+
+    
 }
