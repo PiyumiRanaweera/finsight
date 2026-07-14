@@ -11,6 +11,7 @@ import Goals from "./pages/Goals";
 import Profile from "./pages/Profile";
 import { ThemeProvider } from "./context/ThemeContext";
 import Settings from "./pages/Settings";
+import Budgets from "./pages/Budgets";
 
 function ProtectedRoute({ children }) {
   const { user } = useAuth();
@@ -37,6 +38,7 @@ export default function App() {
               <Route path="/transactions" element={<Transactions />} />
               <Route path="/categories" element={<Categories />} />
               <Route path="/goals" element={<Goals />} />
+              <Route path="/budgets" element={<Budgets />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/settings" element={<Settings />} />
             </Route>
