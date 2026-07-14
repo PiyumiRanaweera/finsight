@@ -14,6 +14,7 @@ export function AuthProvider({ children }) {
     localStorage.setItem("token", data.token);
     localStorage.setItem("user", JSON.stringify({ email: data.email, fullName: data.fullName }));
     setUser({ email: data.email, fullName: data.fullName });
+    localStorage.setItem("refreshToken", data.refreshToken);
   };
 
   const register = async (email, password, fullName) => {
@@ -21,10 +22,13 @@ export function AuthProvider({ children }) {
     localStorage.setItem("token", data.token);
     localStorage.setItem("user", JSON.stringify({ email: data.email, fullName: data.fullName }));
     setUser({ email: data.email, fullName: data.fullName });
+    localStorage.setItem("refreshToken", data.refreshToken);
   };
 
-  const logout = () => {
+  const logout = async () => {
+    try { await client.post("/auth/logout"); } catch { /* best effort */ }
     localStorage.removeItem("token");
+    localStorage.removeItem("refreshToken");
     localStorage.removeItem("user");
     setUser(null);
   };

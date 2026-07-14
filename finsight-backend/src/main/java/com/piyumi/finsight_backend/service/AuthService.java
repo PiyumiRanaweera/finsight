@@ -19,6 +19,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final RefreshTokenService refreshTokenService;
 
     public AuthResponse register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.email())) {
@@ -30,7 +31,10 @@ public class AuthService {
                 .fullName(request.fullName())
                 .build();
         userRepository.save(user);
-        return new AuthResponse(jwtService.generateToken(user.getEmail()), user.getEmail(), user.getFullName());
+        return new AuthResponse(
+                jwtService.generateToken(user.getEmail()),
+                refreshTokenService.create(user),
+                user.getEmail(), user.getFullName());
     }
 
     public AuthResponse login(LoginRequest request) {
@@ -39,6 +43,22 @@ public class AuthService {
         if (!passwordEncoder.matches(request.password(), user.getPassword())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid email or password");
         }
-        return new AuthResponse(jwtService.generateToken(user.getEmail()), user.getEmail(), user.getFullName());
+        return new AuthResponse(
+                jwtService.generateToken(user.getEmail()),
+                refreshTokenService.create(user),
+                user.getEmail(), user.getFullName());
+    }
+
+    public AuthResponse refresh(String refreshTokenValue) {
+        var newToken = refreshTokenService.validateAndRotate(refreshTokenValue);
+        var user = newToken.getUser();
+        return new AuthResponse(
+                jwtService.generateToken(user.getEmail()),
+                newToken.getToken(),
+                user.getEmail(), user.getFullName());
+    }
+
+    public void logout(String email) {
+        refreshTokenService.revokeAll(email);
     }
 }
