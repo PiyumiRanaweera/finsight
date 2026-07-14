@@ -11,6 +11,38 @@ export default function Transactions() {
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState(null);
+  const [importPreview, setImportPreview] = useState(null);
+  const [importing, setImporting] = useState(false);
+
+  const handleCsvSelect = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImporting(true);
+    try {
+      const text = await file.text();
+      const { data } = await client.post("/import/preview", { csv: text });
+      setImportPreview(data);
+    } catch (err) {
+      toast.error(errorMessage(err, "Couldn't parse that CSV"));
+    } finally {
+      setImporting(false);
+      e.target.value = "";
+    }
+  };
+
+  const confirmImport = async () => {
+    setImporting(true);
+    try {
+      const { data } = await client.post("/import/confirm", { rows: importPreview });
+      toast.success(`Imported ${data.imported} transactions 🎉`);
+      setImportPreview(null);
+      load();
+    } catch (err) {
+      toast.error(errorMessage(err));
+    } finally {
+      setImporting(false);
+    }
+  };
 
   const load = async () => {
     setLoading(true);
@@ -59,15 +91,18 @@ export default function Transactions() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold tracking-tight">Transactions</h1>
-        <button
-          onClick={() => { setEditing(null); setModalOpen(true); }}
-          className="bg-violet-600 text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-violet-700 cursor-pointer"
-        >
-          + Add Transaction
-        </button>
-      </div>
+      <div className="flex gap-2">
+          <label className="border border-violet-200 dark:border-violet-800 text-violet-700 dark:text-violet-300 px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-violet-50 dark:hover:bg-violet-950/50 cursor-pointer">
+            {importing && !importPreview ? "Parsing..." : "📄 Import CSV"}
+            <input type="file" accept=".csv,text/csv" className="hidden" onChange={handleCsvSelect} />
+          </label>
+          <button
+            onClick={() => { setEditing(null); setModalOpen(true); }}
+            className="bg-violet-600 text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-violet-700 cursor-pointer"
+          >
+            + Add Transaction
+          </button>
+        </div>
 
       {loading ? (
         <p className="text-gray-400">Loading...</p>
@@ -123,6 +158,45 @@ export default function Transactions() {
         categories={categories}
         editing={editing}
       />
+
+      {importPreview && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-gray-900/40 backdrop-blur-sm"
+            onClick={() => setImportPreview(null)} />
+          <div className="relative bg-white dark:bg-gray-800 rounded-3xl shadow-xl w-full max-w-2xl p-7 max-h-[85vh] flex flex-col">
+            <h2 className="text-xl font-bold mb-1 dark:text-gray-100">Import Preview</h2>
+            <p className="text-sm text-gray-400 mb-4">
+              {importPreview.length} transactions found — AI has suggested categories. Review, then confirm.
+            </p>
+
+            <div className="flex-1 overflow-y-auto divide-y divide-gray-50 dark:divide-gray-700 -mx-2">
+              {importPreview.map((row, i) => (
+                <div key={i} className="flex items-center gap-3 px-2 py-2.5 text-sm">
+                  <span className="text-gray-400 text-xs w-20 shrink-0">{row.date}</span>
+                  <span className="flex-1 truncate font-medium">{row.description}</span>
+                  <span className="text-xs bg-violet-50 dark:bg-violet-950 text-violet-700 dark:text-violet-300 px-2 py-0.5 rounded-full shrink-0">
+                    {row.categoryName ?? "—"}
+                  </span>
+                  <span className={`font-semibold shrink-0 ${row.type === "INCOME" ? "text-emerald-600 dark:text-emerald-400" : "dark:text-gray-100"}`}>
+                    {row.type === "INCOME" ? "+" : "-"}{fmtLKR(row.amount)}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            <div className="flex gap-3 pt-4">
+              <button onClick={() => setImportPreview(null)}
+                className="flex-1 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 text-sm font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer">
+                Cancel
+              </button>
+              <button onClick={confirmImport} disabled={importing}
+                className="flex-1 py-2.5 rounded-xl bg-violet-600 text-white text-sm font-semibold hover:bg-violet-700 disabled:opacity-50 cursor-pointer">
+                {importing ? "Importing..." : `Import ${importPreview.length} transactions`}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
