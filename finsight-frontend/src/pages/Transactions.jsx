@@ -63,7 +63,7 @@ export default function Transactions() {
         <h1 className="text-2xl font-bold tracking-tight">Transactions</h1>
         <button
           onClick={() => { setEditing(null); setModalOpen(true); }}
-          className="bg-brand-600 text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-700 cursor-pointer"
+          className="bg-violet-600 text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-violet-700 cursor-pointer"
         >
           + Add Transaction
         </button>
