@@ -23,6 +23,14 @@ public class AiController {
         return ResponseEntity.ok(Map.of("category", suggestion != null ? suggestion : ""));
     }
 
+    @PostMapping("/scan-receipt")
+    public ResponseEntity<Map<String, Object>> scanReceipt(
+            Authentication auth,
+            @RequestBody Map<String, String> body) {
+        return ResponseEntity.ok(aiService.scanReceipt(
+                auth.getName(), body.get("image"), body.get("mimeType")));
+    }
+
     @GetMapping("/insights")
     public ResponseEntity<Map<String, String>> insights(
             Authentication auth,

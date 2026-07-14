@@ -43,4 +43,34 @@ public class GeminiService {
             throw new RuntimeException("Unexpected AI response format", e);
         }
     }
+
+    @SuppressWarnings("unchecked")
+    public String generateWithImage(String prompt, String base64Image, String mimeType) {
+        Map<String, Object> body = Map.of(
+                "contents", List.of(
+                        Map.of("parts", List.of(
+                                Map.of("text", prompt),
+                                Map.of("inline_data", Map.of(
+                                        "mime_type", mimeType,
+                                        "data", base64Image
+                                ))
+                        ))
+                )
+        );
+
+        Map<String, Object> response = restClient.post()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(body)
+                .retrieve()
+                .body(Map.class);
+
+        try {
+            var candidates = (List<Map<String, Object>>) response.get("candidates");
+            var content = (Map<String, Object>) candidates.get(0).get("content");
+            var parts = (List<Map<String, Object>>) content.get("parts");
+            return ((String) parts.get(0).get("text")).trim();
+        } catch (Exception e) {
+            throw new RuntimeException("Unexpected AI response format", e);
+        }
+    }
 }
