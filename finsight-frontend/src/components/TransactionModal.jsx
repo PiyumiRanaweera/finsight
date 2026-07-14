@@ -12,6 +12,7 @@ export default function TransactionModal({ open, onClose, onSaved, categories, e
   const [form, setForm] = useState(EMPTY);
   const [suggesting, setSuggesting] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [scanning, setScanning] = useState(false);
 
   useEffect(() => {
     if (editing) {
@@ -42,6 +43,51 @@ export default function TransactionModal({ open, onClose, onSaved, categories, e
       toast.error(errorMessage(err, "AI suggestion failed"));
     } finally {
       setSuggesting(false);
+    }
+  };
+
+  const handleReceiptScan = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image too large (max 5MB)");
+      return;
+    }
+
+    setScanning(true);
+    try {
+      // Read file as base64
+      const base64 = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result.split(",")[1]);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+
+      const { data } = await client.post("/ai/scan-receipt", {
+        image: base64,
+        mimeType: file.type,
+      });
+
+      // Pre-fill the form with whatever was extracted
+      const match = data.category
+        ? categories.find((c) => c.name === data.category)
+        : null;
+
+      setForm((f) => ({
+        ...f,
+        amount: data.amount != null ? String(data.amount) : f.amount,
+        description: data.merchant ?? f.description,
+        transactionDate: data.date ?? f.transactionDate,
+        categoryId: match ? String(match.id) : f.categoryId,
+        type: "EXPENSE",
+      }));
+      toast.success("Receipt scanned! Check the details 🧾");
+    } catch (err) {
+      toast.error(errorMessage(err, "Couldn't read the receipt"));
+    } finally {
+      setScanning(false);
+      e.target.value = ""; // allow re-selecting the same file
     }
   };
 
@@ -78,6 +124,14 @@ export default function TransactionModal({ open, onClose, onSaved, categories, e
         <h2 className="text-xl font-bold mb-5 dark:text-gray-100">
           {editing ? "Edit Transaction" : "Add Transaction"}
         </h2>
+
+        {!editing && (
+          <label className={`flex items-center justify-center gap-2 mb-4 py-3 rounded-xl border-2 border-dashed border-violet-300 dark:border-violet-800 text-sm font-semibold text-violet-700 dark:text-violet-300 hover:bg-violet-50 dark:hover:bg-violet-950/50 cursor-pointer transition-colors ${scanning ? "opacity-50 pointer-events-none" : ""}`}>
+            {scanning ? "📸 Reading receipt..." : "📸 Scan a receipt"}
+            <input type="file" accept="image/*" capture="environment"
+              className="hidden" onChange={handleReceiptScan} />
+          </label>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-3">

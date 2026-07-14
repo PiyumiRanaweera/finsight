@@ -1,13 +1,17 @@
 package com.piyumi.finsight_backend.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.piyumi.finsight_backend.dto.CategoryResponse;
 import com.piyumi.finsight_backend.entity.Transaction;
 import com.piyumi.finsight_backend.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.YearMonth;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -68,5 +72,45 @@ public class AiService {
                 """.formatted(ym.getMonth(), year, txSummary);
 
         return geminiService.generate(prompt);
+    }
+
+    @SuppressWarnings("unchecked")
+    public Map<String, Object> scanReceipt(String email, String base64Image, String mimeType) {
+        List<String> categoryNames = categoryService.getAll(email).stream()
+                .map(CategoryResponse::name)
+                .toList();
+
+        String prompt = """
+                You are a receipt-reading assistant. Extract information from this receipt image.
+
+                Reply with ONLY a JSON object, no markdown, no backticks, in exactly this format:
+                {"amount": <total amount as number>, "date": "<date in YYYY-MM-DD format>", "merchant": "<store/merchant name>", "category": "<best match from this list or null: %s>"}
+
+                Rules:
+                - amount = the final TOTAL paid (after taxes/discounts)
+                - If the date is unreadable, use null
+                - If no category fits well, use null
+                - Reply with the JSON object and absolutely nothing else
+                """.formatted(String.join(", ", categoryNames));
+
+        String raw = geminiService.generateWithImage(prompt, base64Image, mimeType);
+
+        // Defensive cleanup: strip markdown fences if the model disobeys
+        String cleaned = raw.replaceAll("```json", "").replaceAll("```", "").trim();
+
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            Map<String, Object> parsed = mapper.readValue(cleaned, Map.class);
+
+            // Validate the category against the user's real list
+            Object category = parsed.get("category");
+            if (category != null && !categoryNames.contains(category.toString())) {
+                parsed.put("category", null);
+            }
+            return parsed;
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY,
+                    "Could not read the receipt. Try a clearer photo.");
+        }
     }
 }
