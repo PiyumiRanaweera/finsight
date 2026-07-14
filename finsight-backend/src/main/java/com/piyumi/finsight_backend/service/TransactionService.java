@@ -137,6 +137,35 @@ public class TransactionService {
         return result;
     }
 
+    public List<Map<String, Object>> getMonthlyTrend(String email) {
+        List<Map<String, Object>> result = new ArrayList<>();
+        YearMonth current = YearMonth.now();
+
+        for (int i = 5; i >= 0; i--) {
+            YearMonth ym = current.minusMonths(i);
+            List<Transaction> txs = transactionRepository
+                    .findByUserEmailAndTransactionDateBetweenOrderByTransactionDateDesc(
+                            email, ym.atDay(1), ym.atEndOfMonth());
+
+            BigDecimal income = txs.stream()
+                    .filter(t -> t.getType() == Transaction.Type.INCOME)
+                    .map(Transaction::getAmount)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+            BigDecimal expenses = txs.stream()
+                    .filter(t -> t.getType() == Transaction.Type.EXPENSE)
+                    .map(Transaction::getAmount)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+            Map<String, Object> point = new HashMap<>();
+            point.put("month", ym.getMonth().toString().substring(0, 3)); // "FEB"
+            point.put("income", income);
+            point.put("expenses", expenses);
+            result.add(point);
+        }
+        return result;
+    }
+
     private Category resolveCategory(String email, Long categoryId) {
         if (categoryId == null) return null;
         return categoryRepository.findByIdAndUserEmail(categoryId, email)

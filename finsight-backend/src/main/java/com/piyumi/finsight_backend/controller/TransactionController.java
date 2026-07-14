@@ -44,6 +44,11 @@ public class TransactionController {
         return ResponseEntity.ok(transactionService.getSummary(auth.getName(), year, month));
     }
 
+    @GetMapping("/trend")
+    public ResponseEntity<List<Map<String, Object>>> trend(Authentication auth) {
+        return ResponseEntity.ok(transactionService.getMonthlyTrend(auth.getName()));
+    }
+
     @PostMapping
     public ResponseEntity<TransactionResponse> create(Authentication auth,
                                                       @Valid @RequestBody TransactionRequest request) {

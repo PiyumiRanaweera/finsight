@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import {
-  PieChart, Pie, Cell, ResponsiveContainer, Tooltip,
-  AreaChart, Area,
-} from "recharts";
 import client from "../api/client";
 import { useAuth } from "../context/AuthContext";
 import { emojiFor, fmtLKR } from "../utils/format";
+import {
+  PieChart, Pie, Cell, ResponsiveContainer, Tooltip,
+  AreaChart, Area, XAxis, YAxis, CartesianGrid,
+} from "recharts";
 
 const COLORS = ["#8b5cf6", "#ec4899", "#3b82f6", "#f59e0b", "#10b981", "#14b8a6", "#f43f5e"];
 
@@ -19,16 +19,19 @@ export default function Dashboard() {
   const [daily, setDaily] = useState([]);
   const [insights, setInsights] = useState("");
   const [loadingInsights, setLoadingInsights] = useState(false);
+  const [trend, setTrend] = useState([]);
 
   useEffect(() => {
     void (async () => {
       setInsights("");
-      const [s, d] = await Promise.all([
+      const [s, d, t] = await Promise.all([
         client.get(`/transactions/summary?year=${year}&month=${month}`),
         client.get(`/transactions/daily-balances?year=${year}&month=${month}`),
+        client.get(`/transactions/trend`),
       ]);
       setSummary(s.data);
       setDaily(d.data);
+      setTrend(t.data);
     })();
   }, [year, month]);
 
@@ -60,6 +63,7 @@ export default function Dashboard() {
     return "Good evening";
   };
 
+  
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -193,6 +197,46 @@ export default function Dashboard() {
                   <p className="text-gray-400 py-8 text-center">Nothing to show yet.</p>
                 )}
               </div>
+            </div>
+          </div>
+
+          {/* 6-month trend */}
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm shadow-gray-200/50 dark:shadow-none p-6">
+            <h2 className="text-lg font-bold mb-4">6-Month Trend</h2>
+            <div style={{ height: 280 }}>
+              <ResponsiveContainer>
+                <AreaChart data={trend} margin={{ top: 10, right: 10, bottom: 0, left: 10 }}>
+                  <defs>
+                    <linearGradient id="incomeGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#10b981" stopOpacity={0.3} />
+                      <stop offset="100%" stopColor="#10b981" stopOpacity={0} />
+                    </linearGradient>
+                    <linearGradient id="expenseGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#8b5cf6" stopOpacity={0.3} />
+                      <stop offset="100%" stopColor="#8b5cf6" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#9ca3af22" vertical={false} />
+                  <XAxis dataKey="month" tick={{ fontSize: 12, fill: "#9ca3af" }}
+                    axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 11, fill: "#9ca3af" }}
+                    axisLine={false} tickLine={false}
+                    tickFormatter={(v) => (v >= 1000 ? `${Math.round(v / 1000)}k` : v)} />
+                  <Tooltip formatter={(v) => fmtLKR(v)} />
+                  <Area type="monotone" dataKey="income" name="Income"
+                    stroke="#10b981" strokeWidth={2.5} fill="url(#incomeGrad)" />
+                  <Area type="monotone" dataKey="expenses" name="Expenses"
+                    stroke="#8b5cf6" strokeWidth={2.5} fill="url(#expenseGrad)" />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="flex gap-5 mt-3 text-xs font-semibold">
+              <span className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" /> Income
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-violet-500" /> Expenses
+              </span>
             </div>
           </div>
 
