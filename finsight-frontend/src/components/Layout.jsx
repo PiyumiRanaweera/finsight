@@ -1,5 +1,6 @@
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import AiChat from "./AiChat";
 
 const NAV = [
   { path: "/", label: "Dashboard", icon: "📊" },
@@ -8,6 +9,7 @@ const NAV = [
   { path: "/goals", label: "Goals", icon: "🎯" },
   { path: "/budgets", label: "Budgets", icon: "💰" },
   { path: "/settings", label: "Settings", icon: "⚙️" },
+
 ];
 
 export default function Layout() {
@@ -85,6 +87,8 @@ export default function Layout() {
       <main className="flex-1 px-6 lg:px-10 py-8 max-w-5xl mx-auto w-full">
         <Outlet />
       </main>
+
+      <AiChat />
     </div>
   );
 }
