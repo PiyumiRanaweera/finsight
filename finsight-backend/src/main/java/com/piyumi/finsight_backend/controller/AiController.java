@@ -7,6 +7,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/ai")
@@ -29,6 +30,15 @@ public class AiController {
             @RequestBody Map<String, String> body) {
         return ResponseEntity.ok(aiService.scanReceipt(
                 auth.getName(), body.get("image"), body.get("mimeType")));
+    }
+
+    @PostMapping("/chat")
+    public ResponseEntity<Map<String, String>> chat(Authentication auth,
+                                                    @RequestBody Map<String, Object> body) {
+        @SuppressWarnings("unchecked")
+        List<Map<String, String>> history = (List<Map<String, String>>) body.get("history");
+        String answer = aiService.chat(auth.getName(), body.get("question").toString(), history);
+        return ResponseEntity.ok(Map.of("answer", answer));
     }
 
     @GetMapping("/insights")

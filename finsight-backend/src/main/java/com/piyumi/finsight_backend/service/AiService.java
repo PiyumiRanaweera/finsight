@@ -113,4 +113,46 @@ public class AiService {
                     "Could not read the receipt. Try a clearer photo.");
         }
     }
+
+    public String chat(String email, String question, List<Map<String, String>> history) {
+        // Build the user's financial context (last 3 months)
+        YearMonth now = YearMonth.now();
+        List<Transaction> txs = transactionRepository
+                .findByUserEmailAndTransactionDateBetweenOrderByTransactionDateDesc(
+                        email, now.minusMonths(2).atDay(1), now.atEndOfMonth());
+
+        String txContext = txs.isEmpty()
+                ? "No transactions in the last 3 months."
+                : txs.stream()
+                    .map(t -> "%s | %s | LKR %s | %s%s".formatted(
+                            t.getTransactionDate(), t.getType(), t.getAmount(),
+                            t.getDescription(),
+                            t.getCategory() != null ? " [" + t.getCategory().getName() + "]" : ""))
+                    .collect(Collectors.joining("\n"));
+
+        String historyContext = history == null || history.isEmpty() ? "" :
+                history.stream()
+                        .map(m -> m.get("role") + ": " + m.get("content"))
+                        .collect(Collectors.joining("\n"));
+
+        String prompt = """
+                You are FinSight's financial assistant for a user in Sri Lanka (currency LKR).
+                Answer the user's question using ONLY the transaction data below.
+                Be specific with numbers. Be concise (under 120 words). Warm, helpful tone.
+                Plain text only, no markdown.
+                If the question cannot be answered from the data, say so honestly.
+                If the question is unrelated to personal finance, politely decline and
+                say you can only help with their finances.
+
+                User's transactions (last 3 months):
+                %s
+
+                Conversation so far:
+                %s
+
+                User's question: %s
+                """.formatted(txContext, historyContext, question);
+
+        return geminiService.generate(prompt);
+    }
 }
