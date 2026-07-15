@@ -10,6 +10,7 @@ import java.util.Optional;
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
     List<Transaction> findByUserEmailOrderByTransactionDateDesc(String email);
     Optional<Transaction> findByIdAndUserEmail(Long id, String email);
+    List<Transaction> findByUserEmailAndTransactionDateBefore(String email, LocalDate date);
     List<Transaction> findByUserEmailAndTransactionDateBetweenOrderByTransactionDateDesc(
             String email, LocalDate start, LocalDate end);
 }

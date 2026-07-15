@@ -93,6 +93,17 @@ public class TransactionService {
                 .map(Transaction::getAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
+        // Opening balance: everything that happened BEFORE this month
+        List<Transaction> priorTxs = transactionRepository
+                .findByUserEmailAndTransactionDateBefore(email, ym.atDay(1));
+        BigDecimal openingBalance = priorTxs.stream()
+                .map(t -> t.getType() == Transaction.Type.INCOME
+                        ? t.getAmount() : t.getAmount().negate())
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal monthlyNet = income.subtract(expenses);
+        BigDecimal closingBalance = openingBalance.add(monthlyNet);
+
         Map<String, BigDecimal> byCategory = new HashMap<>();
         txs.stream()
                 .filter(t -> t.getType() == Transaction.Type.EXPENSE)
@@ -101,12 +112,14 @@ public class TransactionService {
                     byCategory.merge(name, t.getAmount(), BigDecimal::add);
                 });
 
-        return Map.of(
-                "income", income,
-                "expenses", expenses,
-                "balance", income.subtract(expenses),
-                "byCategory", byCategory
-        );
+        Map<String, Object> result = new HashMap<>();
+        result.put("income", income);
+        result.put("expenses", expenses);
+        result.put("balance", monthlyNet);          // kept for compatibility
+        result.put("openingBalance", openingBalance);
+        result.put("closingBalance", closingBalance);
+        result.put("byCategory", byCategory);
+        return result;
     }
 
     public List<Map<String, Object>> getDailyBalances(String email, int year, int month) {

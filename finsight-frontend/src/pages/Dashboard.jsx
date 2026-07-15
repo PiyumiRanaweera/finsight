@@ -99,10 +99,16 @@ export default function Dashboard() {
           {/* Hero balance card */}
           <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-violet-600 via-purple-500 to-violet-700 text-white p-8 shadow-lg shadow-violet-600/20">
             <p className="text-sm text-white/70 font-medium">Total Balance · {months[month - 1]}</p>
-            <p className="text-4xl font-extrabold tracking-tight mt-1">{fmtLKR(summary.balance)}</p>
-            <div className="flex gap-6 mt-3 text-sm">
-              <span className="text-white/90">↑ Income {fmtLKR(summary.income)}</span>
-              <span className="text-white/70">↓ Expenses {fmtLKR(summary.expenses)}</span>
+            <p className="text-4xl font-extrabold tracking-tight mt-1">{fmtLKR(summary.closingBalance)}</p>
+            <div className="flex flex-wrap gap-x-6 gap-y-1 mt-3 text-sm">
+              <span className="text-white/70">Opened with {fmtLKR(summary.openingBalance)}</span>
+              <span className={summary.balance >= 0 ? "text-white/90" : "text-white/80"}>
+                This month {summary.balance >= 0 ? "+" : "−"}{fmtLKR(Math.abs(summary.balance))}
+              </span>
+            </div>
+            <div className="flex gap-6 mt-1.5 text-xs text-white/60">
+              <span>↑ Income {fmtLKR(summary.income)}</span>
+              <span>↓ Expenses {fmtLKR(summary.expenses)}</span>
             </div>
 
             {/* Sparkline */}
